@@ -6,6 +6,14 @@
 #include <WiFiUdp.h>
 #include <DHTesp.h>
 
+
+#define LED_PIN     14
+#define NUM_LEDS    10
+#define CLOCK_PIN 18  // Pin de reloj para el bus SPI
+#define DATA_PIN 23  // Pin de datos para el bus SPI
+
+
+
 struct Persona {
   int edad;
   
@@ -107,14 +115,14 @@ void setup() {
 //------------------------------FIREBASE-----------------------------------
   Serial.begin(115200);
   
-  conectarWiFi();//conexion 
-  timeClient.setTimeOffset(-18000);// la hora esta sincronizado con un servidor de Estados unidos
+ // conectarWiFi();//conexion 
+  //timeClient.setTimeOffset(-18000);// la hora esta sincronizado con un servidor de Estados unidos
   //Existe un desface de 5 horas
-  timeClient.begin();// iniciamos la conexion
+ // timeClient.begin();// iniciamos la conexion
   
-  Serial.println("Conexión exitosa");
+ // Serial.println("Conexión exitosa");
   
-  inicializarFirebase();
+ // inicializarFirebase();
   
   
   //Alimentacion del DHT22
@@ -130,16 +138,17 @@ void setup() {
   pinMode(Heating, OUTPUT);
   digitalWrite(Heating,HIGH);
   pinMode(Humidifier,OUTPUT); 
- leer();
- 
+// leer();
+
  
 }
 void loop() {
   
 
-
-  leer();
-  delay(1000);
+ // Establecer un color rojo en el primer LED
+  
+  //leer();
+  //delay(1000);
 }
 
 void GestionActuadoresTemperatura(float temper){
@@ -258,11 +267,17 @@ void leerDatos() {
 }
 void leer() {
   
-    if (Firebase.getJSON(firebaseData, "/sensores/estado_vent/")) {
+    if (Firebase.getJSON(firebaseData, "/sensores/luz/")) {
      FirebaseJson &json = firebaseData.to<FirebaseJson>();
-     json.get(result , "AireFrio");
-     
-     Serial.println(result.type);
+     json.get(result , "B");
+     int ga=result.to<int>();
+     if(ga<5){
+ Serial.println("hola");
+     }
+     else{
+      Serial.println(ga);
+     }
+    
 
   } else {
     Serial.println(firebaseData.errorReason());
